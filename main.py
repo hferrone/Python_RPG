@@ -26,7 +26,9 @@ grenade = Item("Grenade", "attack", "Deals 500 damage", 500)
 
 # Instantiate people
 player_magic = [fire, thunder, blizzard, meteor, cure, cura]
-player_items = [potion, hi_potion, super_potion, elixer, hi_elixer, grenade]
+player_items = [{"item": potion, "quantity": 15}, {"item": hi_potion, "quantity": 5},
+                {"item": super_potion, "quantity": 5},{"item": elixer, "quantity": 5},
+                {"item": hi_elixer, "quantity": 2},{"item": grenade, "quantity": 5}]
 enemy_magic = []
 enemy_items = []
 
@@ -110,11 +112,24 @@ while battleIsRunning:
         if item_choice == -1:
             continue
 
-        item = player.items[item_choice]
+        item = player.items[item_choice]["item"]
+
+        if player.items[item_choice]["quantity"] == 0:
+            print(bcolors.FAIL + "\n" + "None left..." + bcolors.ENDC)
+            continue
+
+        player.items[item_choice]["quantity"] -= 1
+
         if item.type == "potion":
             player.heal(item.prop)
             print(bcolors.OKGREEN + "\n" + item.name + " heals for", str(item.prop), "HP" + bcolors.ENDC)
-
+        elif item.type == "elixer":
+            player.hp = player.maxhp
+            player.mp = player.maxmp
+            print(bcolors.OKGREEN + "\n" + item.name + " fully restores HP/MP" + bcolors.ENDC)
+        elif item.type == "attack":
+            enemy.take_damage(item.prop)
+            print(bcolors.FAIL + "\n" + item.name + " deals" + str(item.prop), "points of damage" + bcolors.ENDC)
 
     enemy_attack()
     show_stats()
